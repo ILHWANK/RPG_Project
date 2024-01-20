@@ -1922,6 +1922,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backButton: {fileID: 655958940}
+  chapter1Button: {fileID: 508094230}
+  chapter2Button: {fileID: 642251042}
+  chapter3Button: {fileID: 1124201971}
   chapterStartButton: {fileID: 669015194}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

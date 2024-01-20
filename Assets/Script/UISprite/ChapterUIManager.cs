@@ -12,15 +12,47 @@ public class ChapterUIManager : MonoBehaviour
     [SerializeField]
     GameObject skill1Object, skill2Object, skill3Object, victoryObject, defeatObject;
 
+    GameManager gameManager;
+
+    bool isPause = false;
+
     void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
+
         // AddListener
         backButton.onClick.AddListener(OnClick_BackButton);
         skiil1Button.onClick.AddListener(OnClick_Skill1Button);
         victoryExitButton.onClick.AddListener(OnClick_VictoryExitButton);
         defeatRetryButton.onClick.AddListener(OnClick_DefeatRetryButton);
         defeatExitButton.onClick.AddListener(OnClick_DefeatExitButton);
+    }
 
+    void Update()
+    {
+        if (gameManager.isVictory)
+        {
+            EnableVictoryPanel(true);
+            Pause();
+        }
+        else if (gameManager.isDefeat)
+        {
+            EnableDefeatPanel(true);
+            Pause();
+        }
+        else if (isPause)
+        {
+            Pause();
+        }
+        else
+        {
+            Time.timeScale = gameManager.gameSpeed;
+        }
+    }
+
+    private void Pause()
+    {
+        Time.timeScale = 0;
     }
 
     void TempExit()
@@ -42,12 +74,14 @@ public class ChapterUIManager : MonoBehaviour
     // OnClick
     void OnClick_BackButton()
     {
-        EnableDefeatPanel(true);
+        // Temp
+        defeatObject.SetActive(true);
+        isPause = true;
     }
 
     void OnClick_Skill1Button()
     {
-        EnableVictoryPanel(true);
+
     }
 
     void OnClick_Skill2Button()
@@ -67,7 +101,7 @@ public class ChapterUIManager : MonoBehaviour
 
     void OnClick_DefeatRetryButton()
     {
-        SceneManager.LoadScene("Chapter1");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void OnClick_DefeatExitButton()

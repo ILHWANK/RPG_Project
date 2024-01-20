@@ -13,6 +13,12 @@ EditorBuildSettings:
     guid: 872266984c7244557b9d956aaa4965e0
   - enabled: 1
     path: Assets/Scenes/Chapter1.unity
+    guid: 9ddf26a65fdac4d54814c100c1403c9e
+  - enabled: 1
+    path: Assets/Scenes/Chapter2.unity
     guid: 803d45ce25fe14f7ab1394829ac0e0b0
+  - enabled: 1
+    path: Assets/Scenes/Chapter3.unity
+    guid: 3edc6e3c16e92454baaf27f960fcb47e
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
