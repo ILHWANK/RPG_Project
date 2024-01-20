@@ -71,7 +71,6 @@ public class Enemy : MonoBehaviour
         targetObjects = FindObjectsOfType<Ally>();
 
         Vector2 allyPosition = rigidbody2D.position;
-
         float targetDistance = 0f;
 
         for (int i = 0; i < targetObjects.Length; ++i)
@@ -105,6 +104,8 @@ public class Enemy : MonoBehaviour
                     }
                 case CharacterState.Move:
                     {
+                        animator.SetTrigger("WalkTrigger");
+
                         Vector2 targetPosition = new Vector2(targetAlly.transform.position.x, targetAlly.transform.position.y);
 
                         Vector2 dirVec = targetPosition - allyPosition;
@@ -121,13 +122,11 @@ public class Enemy : MonoBehaviour
                     }
                 case CharacterState.Hurt:
                     {
-
-                        StartCoroutine(KnockBack());
-
                         break;
                     }
                 case CharacterState.Die:
                     {
+                        animator.SetTrigger("DieTrigger");
                         Dead();
 
                         break;
@@ -153,11 +152,16 @@ public class Enemy : MonoBehaviour
         if (collision.tag == "Ally")
         {
             hp -= collision.gameObject.GetComponent<Ally>().power;
+
             characterState = CharacterState.Hurt;
+            StartCoroutine(KnockBack());
 
             if (hp <= 0)
             {
                 characterState = CharacterState.Die;
+            }
+            else {
+                animator.SetTrigger("HurtTrigger");
             }
         }
     }
@@ -168,11 +172,13 @@ public class Enemy : MonoBehaviour
 
         Vector3 dirVec = transform.position - targetAlly.transform.position;
 
-        rigidbody2D.AddForce(dirVec.normalized, ForceMode2D.Impulse);
+        rigidbody2D.AddForce(dirVec.normalized * 10, ForceMode2D.Impulse);
 
         yield return new WaitForSeconds(1f);
 
         characterState = CharacterState.Move;
+
+        //characterState = CharacterState.Move;
     }
 
     void Dead()

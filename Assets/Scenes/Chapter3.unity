@@ -374,7 +374,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4000013306724104, guid: 13c470c5b8dcd4854834911f7e0a9a6c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4000013306724104, guid: 13c470c5b8dcd4854834911f7e0a9a6c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1751,6 +1751,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects: []
   rigidbody2D: {fileID: 0}
+  animator: {fileID: 0}
   characterType: 2
   characterState: 0
   moveSpeed: 1
@@ -2145,7 +2146,7 @@ BoxCollider2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 1
   m_ForceSendLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -2215,6 +2216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects: []
   rigidbody2D: {fileID: 0}
+  animator: {fileID: 0}
   characterType: 1
   characterState: 0
   moveSpeed: 1
@@ -2784,11 +2786,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects: []
   rigidbody2D: {fileID: 0}
+  animator: {fileID: 0}
   characterType: 1
   characterState: 0
   moveSpeed: 1
   power: 0
-  hp: 30
+  hp: 40
   attackRange: 0
   isAlive: 1
 --- !u!1 &1100255578
@@ -3596,7 +3599,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4000013857073264, guid: 315058484cf2044ce8dcb608b4678ff6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 4000013857073264, guid: 315058484cf2044ce8dcb608b4678ff6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3732,6 +3735,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects: []
   rigidbody2D: {fileID: 0}
+  animator: {fileID: 0}
   characterType: 0
   characterState: 0
   moveSpeed: 1
@@ -4647,7 +4651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4000013296727282, guid: 389c7e1a1dabb4e1e917001420b89c9a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 4000013296727282, guid: 389c7e1a1dabb4e1e917001420b89c9a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4783,11 +4787,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects: []
   rigidbody2D: {fileID: 0}
+  animator: {fileID: 0}
   characterType: 0
   characterState: 0
   moveSpeed: 1
   power: 0
-  hp: 20
+  hp: 40
   attackRange: 0
   isAlive: 1
 --- !u!1 &1885256493
@@ -5195,7 +5200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4000010300450076, guid: 7d908ba845b1044e6829ed5fb7c4be10, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4000010300450076, guid: 7d908ba845b1044e6829ed5fb7c4be10, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5331,11 +5336,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects: []
   rigidbody2D: {fileID: 0}
+  animator: {fileID: 0}
   characterType: 2
   characterState: 0
   moveSpeed: 1
   power: 0
-  hp: 20
+  hp: 40
   attackRange: 0
   isAlive: 1
 --- !u!1 &2033952888

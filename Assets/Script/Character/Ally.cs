@@ -7,7 +7,7 @@ public class Ally : MonoBehaviour
     // Character Type
     public enum CharacterType
     {
-        Dealers,
+        Dealer,
         Tanker,
         Supporter
     }
@@ -53,7 +53,7 @@ public class Ally : MonoBehaviour
     {
         characterState = CharacterState.Move;
 
-        //animator.SetBool("isWalk", true);
+        animator.SetTrigger("WalkTrigger");
     }
 
     void FixedUpdate()
@@ -66,9 +66,9 @@ public class Ally : MonoBehaviour
         Vector2 allyPosition = rigidbody2D.position;
 
         Enemy targetEnemy = null;
-
         float targetDistance = 0f;
 
+        // Search Target
         for (int i = 0; i < targetObjects.Length; ++i)
         {
             if (i == 0)
@@ -85,7 +85,7 @@ public class Ally : MonoBehaviour
             }
         }
 
-        //
+        // Character State
         if (targetEnemy != null)
         {
             switch (characterState)
@@ -112,7 +112,7 @@ public class Ally : MonoBehaviour
                     }
                 case CharacterState.Attack:
                     {
-                        //animator.SetBool("isAttack", true);
+                        StartCoroutine(AttackCoroutine());
                         break;
                     }
                 case CharacterState.Die:
@@ -144,16 +144,20 @@ public class Ally : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    IEnumerator AttackCoroutine()
     {
-        if (collision.tag == "Enemy")
-        {
-            characterState = CharacterState.Move;
-        }
+        animator.SetTrigger("AttackTrigger");
+
+        yield return new WaitForSeconds(1.5f);
+
+        animator.SetTrigger("WalkTrigger");
+
+        characterState = CharacterState.Move;
     }
 
     void Dead()
     {
+        animator.SetTrigger("AttackTrigger");
         isAlive = false;
         gameObject.SetActive(false);
     }
