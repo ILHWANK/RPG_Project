@@ -19,6 +19,7 @@ public class Enemy : MonoBehaviour
         Idle,
         Search,
         Move,
+        Casting,
         Attack,
         Hurt,
         Die,
@@ -31,18 +32,32 @@ public class Enemy : MonoBehaviour
 
     WaitForFixedUpdate wait;
 
+    IEnumerator charactorActionCoroutine;
+    
     public CharacterType characterType;
     public CharacterState characterState;
 
     // Character Stat
     public float moveSpeed;
     public float power;
-    public float hp;
+    public float curHp;
+    public float maxHp;
     public float attackRange;
+    public float attackDelay;
+    public float skillCoolTimeMax;
+    public float skillCoolTimeCur;
+
+    public float damage;
+
+    public string skillName;
+    public string skillInfo;
 
     public bool isAlive;
 
-    Ally targetAlly = null;
+    Ally moveTarget   = null;
+    Ally attackTarget = null;
+
+    GameManager gameManager;
 
     void Awake()
     {
@@ -51,90 +66,92 @@ public class Enemy : MonoBehaviour
 
         wait = new WaitForFixedUpdate();
 
-        characterState = CharacterState.Move;
+        curHp = maxHp;
     }
 
     void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
+
         characterState = CharacterState.Move;
+
+        CharacterAction();
     }
 
     void FixedUpdate()
     {
-        if (!isAlive)
+        if (!isAlive || curHp <= 0)
         {
             characterState = CharacterState.Die;
 
             return;
         }
-
-        targetObjects = FindObjectsOfType<Ally>();
-
-        Vector2 allyPosition = rigidbody2D.position;
-        float targetDistance = 0f;
-
-        for (int i = 0; i < targetObjects.Length; ++i)
+        else
         {
-            if (i == 0)
+            targetObjects = FindObjectsOfType<Ally>();
+
+            Vector2 enemyPosition = rigidbody2D.position;
+            float targetDistance = 0f;
+
+            for (int i = 0; i < targetObjects.Length; ++i)
             {
-                targetDistance = Vector2.Distance(allyPosition, targetObjects[i].transform.localPosition);
-                targetAlly = targetObjects[i];
-            }
-            else
-            {
-                if (targetDistance > Vector2.Distance(allyPosition, targetObjects[i].transform.localPosition))
+                if (false)
+                { // targetObjects[i].characterType == Enemy.CharacterType.Tanker
+                    moveTarget = targetObjects[i];
+
+                    break;
+                }
+                else
                 {
-                    targetAlly = targetObjects[i];
+                    if (i == 0)
+                    {
+                        targetDistance = Vector2.Distance(enemyPosition, targetObjects[i].rigidbody2D.position);
+                        moveTarget = targetObjects[i];
+                    }
+                    else if (targetDistance > Vector2.Distance(enemyPosition, targetObjects[i].rigidbody2D.position))
+                    {
+                        moveTarget = targetObjects[i];
+                    }
                 }
             }
-        }
 
-        //
-        if (targetAlly != null)
-        {
-            switch (characterState)
+            if (moveTarget != null)
             {
-                case CharacterState.None:
-                    {
-                        break;
-                    }
-                case CharacterState.Idle:
-                    {
-                        break;
-                    }
-                case CharacterState.Move:
-                    {
-                        animator.SetTrigger("WalkTrigger");
+                Vector2 targetPosition = new Vector2(moveTarget.transform.position.x, moveTarget.transform.position.y);
 
-                        Vector2 targetPosition = new Vector2(targetAlly.transform.position.x, targetAlly.transform.position.y);
+                Vector2 dirVec = targetPosition - enemyPosition;
+                Vector2 nextVec = dirVec.normalized * moveSpeed * Time.fixedDeltaTime;
 
-                        Vector2 dirVec = targetPosition - allyPosition;
-                        Vector2 nextVec = dirVec.normalized * moveSpeed * Time.fixedDeltaTime;
+                if (dirVec.x < 0)
+                {
+                    transform.localScale = new Vector3(1, 1, 1);
+                }
+                else
+                {
+                    transform.localScale = new Vector3(-1, 1, 1);
+                }
 
-                        rigidbody2D.MovePosition(rigidbody2D.position + nextVec);
-                        rigidbody2D.velocity = Vector2.zero;
+                targetDistance = Vector2.Distance(enemyPosition, targetPosition);
 
-                        break;
-                    }
-                case CharacterState.Attack:
-                    {
-                        break;
-                    }
-                case CharacterState.Hurt:
-                    {
-                        break;
-                    }
-                case CharacterState.Die:
-                    {
-                        animator.SetTrigger("DieTrigger");
-                        Dead();
+                if (targetDistance <= attackRange
+                    && characterState != CharacterState.Attack
+                    && characterState != CharacterState.Hurt)
+                {
+                    attackTarget = moveTarget;
 
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
+                    characterState = CharacterState.Attack;
+
+                    CharacterAction();
+                }
+                else if (characterState == CharacterState.Move)
+                {
+                    attackTarget = null;
+
+                    animator.SetTrigger("WalkTrigger");
+
+                    rigidbody2D.MovePosition(rigidbody2D.position + nextVec);
+                    rigidbody2D.velocity = Vector2.zero;
+                }
             }
         }
     }
@@ -147,43 +164,138 @@ public class Enemy : MonoBehaviour
         // ..방향 전환이 필요한 경우 추가
     }
 
+    public void SetCharacterSkill()
+    {
+
+    }
+
+    public void CharacterAction()
+    {
+        if (charactorActionCoroutine != null)
+        {
+            StopCoroutine(charactorActionCoroutine);
+
+            charactorActionCoroutine = null;
+        }
+
+        charactorActionCoroutine = CharactorActionCoroutine();
+
+        StartCoroutine(charactorActionCoroutine);
+    }
+
+    IEnumerator CharactorActionCoroutine()
+    {
+        Vector2 allyPosition = rigidbody2D.position;
+
+        switch (characterState)
+        {
+            case CharacterState.None:
+                {
+                    break;
+                }
+            case CharacterState.Idle:
+                {
+                    animator.SetTrigger("IdleTrigger");
+
+                    break;
+                }
+            case CharacterState.Move:
+                {
+                    animator.SetTrigger("WalkTrigger");
+
+                    break;
+                }
+            case CharacterState.Casting:
+                {
+                    animator.SetTrigger("WalkTrigger");
+
+                    while (!animator.GetCurrentAnimatorStateInfo(0).IsName("casting"))
+                        yield return null;
+
+                    characterState = CharacterState.Attack;
+
+                    CharacterAction();
+
+                    break;
+                }
+            case CharacterState.Attack:
+                {
+
+                    animator.SetTrigger("AttackTrigger");
+
+                    yield return new WaitForSeconds(attackDelay);
+
+                    if (attackTarget.gameObject.activeSelf)
+                    {
+                        attackTarget.damage = power;
+                        attackTarget.characterState = Ally.CharacterState.Hurt;
+                        attackTarget.CharacterAction();
+
+                        attackTarget = null;
+                    }
+
+                    characterState = CharacterState.Move;
+
+                    break;
+                }
+            case CharacterState.Hurt:
+                {
+                    animator.SetTrigger("HurtTrigger");
+
+                    Vector3 dirVec = transform.position - moveTarget.transform.position;
+
+                    rigidbody2D.AddForce(dirVec.normalized, ForceMode2D.Impulse);
+
+                    yield return new WaitForSeconds(0.25f);
+                    //yield return new WaitForSeconds(1f);
+
+                    curHp -= damage;
+
+                    gameManager.enemyCurHp -= damage;
+
+                    damage = 0;
+
+                    if (curHp <= 0)
+                    {
+                        curHp = 0;
+
+                        characterState = CharacterState.Die;
+
+                        CharacterAction();
+                    }
+                    else
+                    {
+                        characterState = CharacterState.Move;
+                    }
+
+                    break;
+                }
+            case CharacterState.Die:
+                {
+                    animator.SetTrigger("DieTrigger");
+
+                    while (!animator.GetCurrentAnimatorStateInfo(0).IsName("die"))
+                        yield return null;
+
+                    isAlive = false;
+                    gameObject.SetActive(false);
+
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+
+        yield return null;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Ally")
+        if (collision.tag == "Projectile")
         {
-            hp -= collision.gameObject.GetComponent<Ally>().power;
 
-            characterState = CharacterState.Hurt;
-            StartCoroutine(KnockBack());
-
-            if (hp <= 0)
-            {
-                characterState = CharacterState.Die;
-            }
-            else {
-                animator.SetTrigger("HurtTrigger");
-            }
         }
-    }
-
-    IEnumerator KnockBack()
-    {
-        yield return wait;
-
-        Vector3 dirVec = transform.position - targetAlly.transform.position;
-
-        rigidbody2D.AddForce(dirVec.normalized * 10, ForceMode2D.Impulse);
-
-        yield return new WaitForSeconds(1f);
-
-        characterState = CharacterState.Move;
-
-        //characterState = CharacterState.Move;
-    }
-
-    void Dead()
-    {
-        isAlive = false;
-        gameObject.SetActive(false);
     }
 }
